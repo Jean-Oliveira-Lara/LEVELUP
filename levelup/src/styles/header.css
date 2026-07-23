@@ -1,0 +1,48 @@
+.header{
+    height:80px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 35px;
+
+    background:#111827;
+
+    border-bottom:1px solid #1f2937;
+}
+
+.header h1{
+    color:white;
+    margin:0;
+    font-size:28px;
+}
+
+.header p{
+    margin-top:5px;
+    color:#94a3b8;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+}
+
+.avatar{
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:18px;
+}
