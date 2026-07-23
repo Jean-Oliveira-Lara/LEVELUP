@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/layout/Layout";
 import StatsCards from "../components/dashboard/StatsCards";
 import DailyMissions from "../components/dashboard/DailyMissions";
+import CurrentLesson from "../components/dashboard/CurrentLesson";
+import DailyGoal from "../components/dashboard/DailyGoal";
+import AchievementCard from "../components/dashboard/AchievementCard";
+
 import ProgressBar from "../components/ProgressBar";
 import TaskForm from "../components/TaskForm";
 
@@ -11,6 +15,7 @@ import calculateLevel from "../utils/calculateLevel";
 
 import { useProfile } from "../hooks/useProfile";
 import { useTasks } from "../hooks/useTasks";
+import { useLesson } from "../hooks/useLesson";
 
 import { updateTask, createTask } from "../services/tasks";
 import { updateXP } from "../services/xp";
@@ -27,6 +32,11 @@ function Dashboard() {
     reloadTasks,
   } = useTasks();
 
+  const {
+    lesson,
+    loading: lessonLoading,
+  } = useLesson();
+
   const [xp, setXp] = useState(0);
   const [showForm, setShowForm] = useState(false);
 
@@ -36,7 +46,7 @@ function Dashboard() {
     }
   }, [profile]);
 
-  if (loading || loadingTasks) {
+  if (loading || loadingTasks || lessonLoading) {
     return (
       <Layout>
         <h2>Carregando...</h2>
@@ -110,6 +120,31 @@ function Dashboard() {
 
   return (
     <Layout>
+      <div
+        style={{
+          marginBottom: "30px",
+        }}
+      >
+        <h1
+          style={{
+            color: "white",
+            fontSize: "34px",
+            marginBottom: "8px",
+          }}
+        >
+          👋 Olá, {profile?.name || "Aluno"}
+        </h1>
+
+        <p
+          style={{
+            color: "#94a3b8",
+            fontSize: "17px",
+          }}
+        >
+          Continue aprendendo inglês hoje.
+        </p>
+      </div>
+
       <StatsCards
         xp={xp}
         level={level}
@@ -118,6 +153,12 @@ function Dashboard() {
       />
 
       <ProgressBar progress={progress} />
+
+      <CurrentLesson lesson={lesson} />
+
+      <DailyGoal />
+
+      <AchievementCard />
 
       <div
         style={{
@@ -134,7 +175,7 @@ function Dashboard() {
         </button>
 
         <button onClick={() => navigate("/study")}>
-          🤖 Estudar Agora
+          📚 Estudar Agora
         </button>
       </div>
 

@@ -1,0 +1,33 @@
+.reading-card{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:20px;
+    padding:35px;
+    margin-top:30px;
+}
+
+.reading-card h2{
+    color:white;
+    margin-bottom:10px;
+}
+
+.reading-level{
+    display:inline-block;
+    background:#2563eb;
+    color:white;
+    padding:6px 14px;
+    border-radius:999px;
+    margin-bottom:20px;
+}
+
+.reading-time{
+    color:#94a3b8;
+    margin:15px 0;
+}
+
+.reading-text{
+    color:#e2e8f0;
+    line-height:2;
+    white-space:pre-line;
+    font-size:17px;
+}

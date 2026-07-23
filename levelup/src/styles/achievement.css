@@ -1,0 +1,17 @@
+.achievement-card{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:20px;
+    padding:25px;
+    margin-top:30px;
+}
+
+.achievement-card h2{
+    color:white;
+    margin-bottom:20px;
+}
+
+.achievement-card p{
+    color:#cbd5e1;
+    margin-bottom:10px;
+}
