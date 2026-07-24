@@ -115,7 +115,7 @@ function Dashboard() {
 
     setShowForm(false);
 
-    reloadTasks();
+    await reloadTasks();
   }
 
   return (
@@ -154,7 +154,15 @@ function Dashboard() {
 
       <ProgressBar progress={progress} />
 
-      <CurrentLesson lesson={lesson} />
+      <div
+        onClick={() => navigate("/lessons")}
+        style={{
+          cursor: "pointer",
+          marginBottom: "25px",
+        }}
+      >
+        <CurrentLesson lesson={lesson} />
+      </div>
 
       <DailyGoal />
 
@@ -174,8 +182,8 @@ function Dashboard() {
           ➕ Nova Missão
         </button>
 
-        <button onClick={() => navigate("/study")}>
-          📚 Estudar Agora
+        <button onClick={() => navigate("/lessons")}>
+          📚 Ver Todas as Lições
         </button>
       </div>
 

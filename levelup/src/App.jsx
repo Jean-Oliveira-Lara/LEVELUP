@@ -3,12 +3,16 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+
+import Lessons from "./pages/Lessons";
+
 import Study from "./pages/Study";
 import Vocabulary from "./pages/Vocabulary";
 import Listening from "./pages/Listening";
 import Reading from "./pages/Reading";
 import Grammar from "./pages/Grammar";
 import AIStudy from "./pages/AIStudy";
+
 import Statistics from "./pages/Statistics";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -17,7 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redireciona a raiz para o login */}
+        {/* Redirecionamento */}
         <Route
           path="/"
           element={<Navigate to="/login" replace />}
@@ -40,6 +44,12 @@ function App() {
           element={<Dashboard />}
         />
 
+        {/* Lições */}
+        <Route
+          path="/lessons"
+          element={<Lessons />}
+        />
+
         {/* Estudo */}
         <Route
           path="/study"
@@ -52,13 +62,13 @@ function App() {
         />
 
         <Route
-          path="/listening"
-          element={<Listening />}
+          path="/reading"
+          element={<Reading />}
         />
 
         <Route
-          path="/reading"
-          element={<Reading />}
+          path="/listening"
+          element={<Listening />}
         />
 
         <Route

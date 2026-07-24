@@ -1,10 +1,39 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Layout from "../components/layout/Layout";
 import StudyCard from "../components/study/StudyCard";
 
+import { useLesson } from "../hooks/useLesson";
+
 function Study() {
   const navigate = useNavigate();
+
+  const { lessonId } = useParams();
+
+  const {
+    getLessonById,
+    loading,
+  } = useLesson();
+
+  if (loading) {
+    return (
+      <Layout>
+        <h2>Carregando...</h2>
+      </Layout>
+    );
+  }
+
+  const lesson = getLessonById(Number(lessonId));
+
+  if (!lesson) {
+    return (
+      <Layout>
+        <h2 style={{ color: "white" }}>
+          Lição não encontrada.
+        </h2>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -30,7 +59,7 @@ function Study() {
             marginBottom: "30px",
           }}
         >
-          Escolha uma atividade e evolua no seu inglês.
+          Escolha uma atividade para continuar esta lição.
         </p>
 
         <div
@@ -48,17 +77,8 @@ function Study() {
               marginBottom: "10px",
             }}
           >
-            📚 Lição de Hoje
+            📚 {lesson.title}
           </h2>
-
-          <h3
-            style={{
-              color: "#60a5fa",
-              marginBottom: "10px",
-            }}
-          >
-            Daily Routine
-          </h3>
 
           <p
             style={{
@@ -66,17 +86,35 @@ function Study() {
               marginBottom: "15px",
             }}
           >
-            Aprenda vocabulário, gramática, leitura, listening e pratique com a IA.
+            {lesson.description}
           </p>
 
-          <p
+          <div
             style={{
-              color: "#22c55e",
-              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "15px",
             }}
           >
-            ⭐ Recompensa: +150 XP
-          </p>
+            <span
+              style={{
+                color: "#38bdf8",
+                fontWeight: "bold",
+              }}
+            >
+              Nível: {lesson.level}
+            </span>
+
+            <span
+              style={{
+                color: "#22c55e",
+                fontWeight: "bold",
+              }}
+            >
+              ⭐ {lesson.xp} XP
+            </span>
+          </div>
         </div>
       </div>
 
