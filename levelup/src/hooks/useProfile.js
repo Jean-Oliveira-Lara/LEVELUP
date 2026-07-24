@@ -7,15 +7,21 @@ export function useProfile() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data, error } = await getProfile();
+      try {
+        const { data, error } = await getProfile();
 
-      if (error) {
-        console.error(error);
-      } else {
-        setProfile(data);
+        if (error) {
+          console.error("Erro ao carregar perfil:", error);
+          setProfile(null);
+        } else {
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error("Erro inesperado:", err);
+        setProfile(null);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     loadProfile();
@@ -24,5 +30,9 @@ export function useProfile() {
   return {
     profile,
     loading,
+    reloadProfile: async () => {
+      const { data } = await getProfile();
+      setProfile(data);
+    },
   };
 }

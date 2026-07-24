@@ -16,36 +16,51 @@ export async function signUp(name, email, password) {
   }
 
   if (data.user) {
+    // Cria o perfil
     const { error: profileError } = await supabase
       .from("profiles")
       .insert({
         id: data.user.id,
         name,
         xp: 0,
-        streak: 0,
         level: 1,
+        streak: 0,
         study_hours: 0,
       });
 
     if (profileError) {
-      console.error(profileError);
+      console.error("Erro ao criar perfil:", profileError);
+      return { error: profileError };
+    }
+
+    // Desbloqueia a primeira lição
+    const { error: lessonError } = await supabase
+      .from("user_lessons")
+      .insert({
+        user_id: data.user.id,
+        lesson_id: 1,
+        unlocked: true,
+        completed: false,
+        progress: 0,
+      });
+
+    if (lessonError) {
+      console.error("Erro ao criar primeira lição:", lessonError);
     }
   }
 
-  return { data, error };
+  return { data, error: null };
 }
 
 export async function signIn(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  return await supabase.auth.signInWithPassword({
     email,
     password,
   });
-
-  return { data, error };
 }
 
 export async function signOut() {
-  await supabase.auth.signOut();
+  return await supabase.auth.signOut();
 }
 
 export async function getUser() {
