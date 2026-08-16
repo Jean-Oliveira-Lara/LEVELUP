@@ -11,19 +11,20 @@ import AchievementCard from "../components/dashboard/AchievementCard";
 import ProgressBar from "../components/ProgressBar";
 import TaskForm from "../components/TaskForm";
 
-import calculateLevel from "../utils/calculateLevel";
+import { calculateLevel, getLevelProgress } from "../utils/calculateLevel";
 
 import { useProfile } from "../hooks/useProfile";
 import { useTasks } from "../hooks/useTasks";
 import { useLesson } from "../hooks/useLesson";
 
-import { updateTask, createTask } from "../services/tasks";
-import { updateXP } from "../services/xp";
+import { updateTask, createTask, ensureDailyMissions } from "../services/tasks";
+import { awardXP } from "../services/xp";
+import { completeActivity } from "../services/activities";
 
 function Dashboard() {
   const navigate = useNavigate();
 
-  const { profile, loading } = useProfile();
+  const { profile, loading, reloadProfile } = useProfile();
 
   const {
     tasks,
@@ -46,6 +47,23 @@ function Dashboard() {
     }
   }, [profile]);
 
+  // Gera as missões diárias de inglês na primeira vez que o Dashboard
+  // carrega no dia. ensureDailyMissions() é idempotente: só insere se
+  // ainda não existir nenhuma missão automática para hoje, então é
+  // seguro chamar toda vez que o Dashboard monta.
+  useEffect(() => {
+    async function setupDailyMissions() {
+      const { created } = await ensureDailyMissions();
+
+      if (created) {
+        await reloadTasks();
+      }
+    }
+
+    setupDailyMissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (loading || loadingTasks || lessonLoading) {
     return (
       <Layout>
@@ -56,10 +74,12 @@ function Dashboard() {
 
   const level = calculateLevel(xp);
 
-  const progress = Math.min(
-    Number(((xp / 1000) * 100).toFixed(1)),
-    100
-  );
+  // Antes: progress = min((xp/1000)*100, 100) — um único "teto" fixo de
+  // 1000 XP para sempre, sem relação com o nível atual (depois do nível 5
+  // a barra travava em 100% para sempre). Mantemos o mesmo cuidado de
+  // arredondamento (evitar "25.0000001%"), mas o progresso agora é
+  // relativo ao nível atual do usuário.
+  const { progress } = getLevelProgress(xp);
 
   async function toggleTask(id) {
     const task = tasks.find((t) => t.id === id);
@@ -88,16 +108,38 @@ function Dashboard() {
 
     setTasks(updatedTasks);
 
-    const newXP = completed
-      ? xp + task.xp
-      : xp - task.xp;
+    if (completed) {
+      // Concluir a missão: soma XP, atualiza streak e registra no
+      // histórico de atividades (tudo em um lugar só, via completeActivity).
+      const result = await completeActivity(
+        task.type || "task",
+        task.xp,
+        `task:${id}`
+      );
 
-    setXp(newXP);
+      if (result.error) {
+        console.error(result.error);
+      }
 
-    const result = await updateXP(newXP);
+      if (result.profile) {
+        setXp(result.profile.xp);
+      }
 
-    if (result.error) {
-      console.error(result.error);
+      await reloadProfile();
+    } else {
+      // Desmarcar a missão: apenas devolve o XP. A streak/histórico do dia
+      // não são desfeitos (evita punir o usuário por um clique acidental).
+      const result = await awardXP(-task.xp);
+
+      if (result.error) {
+        console.error(result.error);
+      }
+
+      if (result.data) {
+        setXp(result.data.xp);
+      }
+
+      await reloadProfile();
     }
   }
 

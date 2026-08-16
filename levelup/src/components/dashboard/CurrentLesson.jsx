@@ -33,7 +33,9 @@ function CurrentLesson({ lesson }) {
       </p>
 
       <button
-        onClick={() => navigate("/study")}
+        onClick={() =>
+          navigate(`/study/${lesson.lesson_id ?? lesson.id}`)
+        }
       >
         ▶ Continuar estudando
       </button>

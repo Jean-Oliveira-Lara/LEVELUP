@@ -14,94 +14,146 @@ import Grammar from "./pages/Grammar";
 import AIStudy from "./pages/AIStudy";
 
 import Statistics from "./pages/Statistics";
+import Goals from "./pages/Goals";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Redirecionamento */}
-        <Route
-          path="/"
-          element={<Navigate to="/login" replace />}
-        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Autenticação */}
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        {/* Autenticação (públicas) */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
-        {/* Dashboard */}
+        {/* Área logada — protegida por ProtectedRoute */}
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
 
-        {/* Lições */}
         <Route
           path="/lessons"
-          element={<Lessons />}
+          element={
+            <ProtectedRoute>
+              <Lessons />
+            </ProtectedRoute>
+          }
         />
 
-        {/* Estudo */}
+        {/* Antes só existia a rota "/study" sem parâmetro, mas
+            Lessons.jsx navega para `/study/${lesson.id}` — a rota
+            simplesmente não existia e caía no "*" (voltava pro login). */}
+        <Route
+          path="/study/:lessonId"
+          element={
+            <ProtectedRoute>
+              <Study />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/study"
-          element={<Study />}
+          element={
+            <ProtectedRoute>
+              <Study />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/vocabulary"
-          element={<Vocabulary />}
+          element={
+            <ProtectedRoute>
+              <Vocabulary />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/reading"
-          element={<Reading />}
+          element={
+            <ProtectedRoute>
+              <Reading />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/listening"
-          element={<Listening />}
+          element={
+            <ProtectedRoute>
+              <Listening />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/grammar"
-          element={<Grammar />}
+          element={
+            <ProtectedRoute>
+              <Grammar />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/ai"
-          element={<AIStudy />}
+          element={
+            <ProtectedRoute>
+              <AIStudy />
+            </ProtectedRoute>
+          }
         />
 
         {/* Usuário */}
         <Route
           path="/profile"
-          element={<Profile />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/statistics"
-          element={<Statistics />}
+          element={
+            <ProtectedRoute>
+              <Statistics />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <Goals />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/settings"
-          element={<Settings />}
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
         />
 
         {/* Página não encontrada */}
-        <Route
-          path="*"
-          element={<Navigate to="/login" replace />}
-        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

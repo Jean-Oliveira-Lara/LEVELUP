@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Layout from "../components/layout/Layout";
 import Flashcard from "../components/study/Flashcard";
 
 import lessons from "../data/lessons";
+import { completeActivity } from "../services/activities";
 
 function Vocabulary() {
   const lesson = lessons[0];
@@ -11,8 +12,30 @@ function Vocabulary() {
   const vocabulary = lesson.vocabulary;
 
   const [index, setIndex] = useState(0);
+  const [awarding, setAwarding] = useState(true);
+
+  // Antes: terminar a lição só mostrava "+150 XP" na tela — nada era
+  // gravado no Supabase (sem XP real, sem streak, sem histórico). O ref
+  // evita conceder XP duas vezes (ex: StrictMode do React roda efeitos
+  // duas vezes em desenvolvimento).
+  const awardedRef = useRef(false);
 
   const finished = index >= vocabulary.length;
+
+  useEffect(() => {
+    if (!finished || awardedRef.current) return;
+
+    awardedRef.current = true;
+    setAwarding(true);
+
+    completeActivity("vocabulary", lesson.xp, `lesson:${lesson.id}`)
+      .then((result) => {
+        if (result.error) {
+          console.error("Erro ao concluir vocabulário:", result.error);
+        }
+      })
+      .finally(() => setAwarding(false));
+  }, [finished, lesson.id, lesson.xp]);
 
   function nextWord() {
     if (index < vocabulary.length - 1) {
@@ -47,7 +70,7 @@ function Vocabulary() {
               marginTop: "20px",
             }}
           >
-            +{lesson.xp} XP
+            {awarding ? "Salvando..." : `+${lesson.xp} XP`}
           </h2>
         </div>
       </Layout>

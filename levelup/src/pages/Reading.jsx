@@ -1,16 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Layout from "../components/layout/Layout";
 import ReadingCard from "../components/study/ReadingCard";
 import ReadingQuiz from "../components/study/ReadingQuiz";
 
 import readings from "../data/readings";
+import { completeActivity } from "../services/activities";
 
 function Reading() {
   const reading = readings[0];
 
   const [startQuiz, setStartQuiz] = useState(false);
   const [score, setScore] = useState(null);
+  const [awarding, setAwarding] = useState(true);
+
+  // Mesmo raciocínio do Vocabulary.jsx: antes o "+40 XP" era só visual.
+  const awardedRef = useRef(false);
+
+  useEffect(() => {
+    if (score === null || awardedRef.current) return;
+
+    awardedRef.current = true;
+    setAwarding(true);
+
+    completeActivity("reading", reading.xp, `reading:${reading.id}`)
+      .then((result) => {
+        if (result.error) {
+          console.error("Erro ao concluir reading:", result.error);
+        }
+      })
+      .finally(() => setAwarding(false));
+  }, [score, reading.id, reading.xp]);
 
   if (score !== null) {
     return (
@@ -28,7 +48,7 @@ function Reading() {
               marginTop: "20px",
             }}
           >
-            +{reading.xp} XP
+            {awarding ? "Salvando..." : `+${reading.xp} XP`}
           </h2>
         </div>
       </Layout>
