@@ -1,4 +1,5 @@
 import { getUserId } from './auth.js'
+import { ensureSchema } from './db.js'
 
 export class HttpError extends Error {
   constructor(status, message) {
@@ -51,6 +52,7 @@ export function route(handlers, { auth = true } = {}) {
     try {
       const fn = handlers[req.method]
       if (!fn) throw new HttpError(405, 'Método não permitido')
+      await ensureSchema()
       let userId = null
       if (auth) {
         userId = await getUserId(req)

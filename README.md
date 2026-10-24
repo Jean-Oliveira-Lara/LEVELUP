@@ -24,7 +24,7 @@ api/            funções da Vercel (auth, day, cards, grammar, progress)
 api/_lib/       conexão com o banco, sessão e helpers HTTP
 shared/         plano do intensivo, algoritmo de revisão, gramática e vocabulário (usado pelo app e pela API)
 src/            app React
-db/schema.sql   tabelas do banco
+api/_lib/schema.js  tabelas do banco (criadas automaticamente na 1ª requisição)
 tests/          testes da lógica (npm test)
 ```
 
@@ -32,7 +32,7 @@ tests/          testes da lógica (npm test)
 
 1. Crie um banco no Neon e copie a connection string.
 2. Copie `.env.example` para `.env` e preencha `DATABASE_URL` e `AUTH_SECRET`.
-3. Crie as tabelas: `npm run db:schema`
+3. As tabelas são criadas sozinhas na primeira requisição (ou rode `npm run db:schema`)
 4. Rode com a Vercel CLI (sobe o app e as funções juntos): `npx vercel dev`
 
 ## Deploy
